@@ -4,5 +4,5 @@
   { "path": "ServerScriptService", "file": "LobbyLighting.lua", "type": "Script" },
   { "path": "ServerScriptService", "file": "LobbyDetails.lua", "type": "Script" },
   { "path": "ServerScriptService", "file": "MapVotingPads.lua", "type": "Script" },
-  { "path": "ServerScriptService", "file": "EcoLabMap.lua", "type": "Script" }
+  { "path": "ServerScriptService", "file": "EcoLabMap_v2.lua", "type": "Script" }
 ]
