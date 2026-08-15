@@ -127,8 +127,7 @@ bannerGui.Parent = banner
 local bannerLabel = Instance.new("TextLabel")
 bannerLabel.Size = UDim2.new(1, 0, 1, 0)
 bannerLabel.BackgroundTransparency = 1
-bannerLabel.Text = "ECO
-LAB"
+bannerLabel.Text = "ECO\nLAB"
 bannerLabel.TextScaled = true
 bannerLabel.TextColor3 = Color3.fromRGB(150, 255, 200)
 bannerLabel.Font = Enum.Font.GothamBlack
@@ -158,8 +157,7 @@ local function buildTerminal(name, pos, rotY)
 	local screenLabel = Instance.new("TextLabel")
 	screenLabel.Size = UDim2.new(1, 0, 1, 0)
 	screenLabel.BackgroundTransparency = 1
-	screenLabel.Text = "ECO LAB
-SECTOR"
+	screenLabel.Text = "ECO LAB\nSECTOR"
 	screenLabel.TextScaled = true
 	screenLabel.TextColor3 = Color3.fromRGB(100, 255, 200)
 	screenLabel.Font = Enum.Font.Code
