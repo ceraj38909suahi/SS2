@@ -87,6 +87,7 @@ for i, map in ipairs(mapData) do
 	billboard.Size = UDim2.new(0, 160, 0, 190)
 	billboard.StudsOffset = Vector3.new(0, 0, 0)
 	billboard.AlwaysOnTop = true
+	billboard.MaxDistance = 30 -- only visible when a player is within 30 studs
 	billboard.Parent = infoAnchor
 
 	local cardFrame = Instance.new("Frame")
@@ -172,6 +173,40 @@ for i, map in ipairs(mapData) do
 				glowTop.Transparency = 0.15 * math.sin(t * math.pi * 2) + 0.1
 				task.wait(0.05)
 			end
+		end
+	end)
+
+	-- Fade the card in/out based on nearest player distance (smoother than hard MaxDistance cutoff)
+	task.spawn(function()
+		local fadeRange = 30 -- studs where fade starts
+		local fullyVisibleRange = 14 -- studs where fully opaque
+		while true do
+			local nearestDist = math.huge
+			for _, plr in ipairs(game.Players:GetPlayers()) do
+				local char = plr.Character
+				local hrp = char and char:FindFirstChild("HumanoidRootPart")
+				if hrp then
+					local dist = (hrp.Position - pos).Magnitude
+					if dist < nearestDist then nearestDist = dist end
+				end
+			end
+
+			local alpha = 1
+			if nearestDist <= fullyVisibleRange then
+				alpha = 0
+			elseif nearestDist >= fadeRange then
+				alpha = 1
+			else
+				alpha = (nearestDist - fullyVisibleRange) / (fadeRange - fullyVisibleRange)
+			end
+
+			cardFrame.BackgroundTransparency = 0.15 + (0.85 * alpha)
+			stroke.Transparency = alpha
+			nameLabel.TextTransparency = alpha
+			iconLabel.TextTransparency = alpha
+			voteLabel.TextTransparency = alpha
+
+			task.wait(0.15)
 		end
 	end)
 end
