@@ -1,5 +1,6 @@
 [
   { "path": "ServerScriptService", "file": "GhSyncTest.lua", "type": "Script" },
   { "path": "ServerScriptService", "file": "LobbyGenerator.lua", "type": "Script" },
-  { "path": "ServerScriptService", "file": "LobbyLighting.lua", "type": "Script" }
+  { "path": "ServerScriptService", "file": "LobbyLighting.lua", "type": "Script" },
+  { "path": "ServerScriptService", "file": "LobbyDetails.lua", "type": "Script" }
 ]
