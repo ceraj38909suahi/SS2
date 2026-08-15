@@ -1,4 +1,4 @@
--- Silent Slayer 2 - Map Voting Pads (Real Parts version, replaces old UI-based one)
+-- Silent Slayer 2 - Map Voting Pads (full rebuild)
 local old = workspace:FindFirstChild("MapVoting")
 if old then old:Destroy() end
 
@@ -13,24 +13,25 @@ local mapData = {
 	{name = "ECO LAB", color = Color3.fromRGB(255, 60, 60)},
 }
 
-local votes = {}
-local playerVotes = {}
 local basePositions = {
 	Vector3.new(-24, 1, 0),
 	Vector3.new(-8, 1, 0),
 	Vector3.new(8, 1, 0),
 	Vector3.new(24, 1, 0),
 }
-local pads = {}
 
-for i, map in ipairs(mapData) do
+local votes = {}
+local playerVotes = {}
+local voteLabels = {}
+
+local function buildPad(map, pos)
 	votes[map.name] = 0
-	local pos = basePositions[i]
 
 	local padModel = Instance.new("Model")
 	padModel.Name = "VotePad_" .. map.name
 	padModel.Parent = votingFolder
 
+	-- Base platform
 	local base = Instance.new("Part")
 	base.Name = "Base"
 	base.Size = Vector3.new(6, 1, 6)
@@ -39,7 +40,9 @@ for i, map in ipairs(mapData) do
 	base.Material = Enum.Material.Metal
 	base.Color = Color3.fromRGB(60, 60, 65)
 	base.Parent = padModel
+	padModel.PrimaryPart = base
 
+	-- Glowing neon top
 	local glowTop = Instance.new("Part")
 	glowTop.Name = "GlowSurface"
 	glowTop.Size = Vector3.new(5, 0.2, 5)
@@ -55,22 +58,25 @@ for i, map in ipairs(mapData) do
 	light.Color = map.color
 	light.Parent = glowTop
 
+	-- Edge glow strips
 	local edgeOffsets = {
-		Vector3.new(2.6, 0, 0), Vector3.new(-2.6, 0, 0),
-		Vector3.new(0, 0, 2.6), Vector3.new(0, 0, -2.6),
+		{Vector3.new(2.6, 0, 0), Vector3.new(0.3, 0.4, 4)},
+		{Vector3.new(-2.6, 0, 0), Vector3.new(0.3, 0.4, 4)},
+		{Vector3.new(0, 0, 2.6), Vector3.new(4, 0.4, 0.3)},
+		{Vector3.new(0, 0, -2.6), Vector3.new(4, 0.4, 0.3)},
 	}
-	for j, off in ipairs(edgeOffsets) do
+	for j, data in ipairs(edgeOffsets) do
 		local strip = Instance.new("Part")
 		strip.Name = "EdgeGlow"..j
-		strip.Size = (j <= 2) and Vector3.new(0.3, 0.4, 4) or Vector3.new(4, 0.4, 0.3)
-		strip.Position = pos + off + Vector3.new(0, 0.3, 0)
+		strip.Size = data[2]
+		strip.Position = pos + data[1] + Vector3.new(0, 0.3, 0)
 		strip.Anchored = true
 		strip.Material = Enum.Material.Neon
 		strip.Color = map.color
 		strip.Parent = padModel
 	end
 
-	-- Real physical sign part (upright), text painted onto its surface, not a floating billboard
+	-- Physical sign (real part, text on its surface)
 	local sign = Instance.new("Part")
 	sign.Name = "Sign"
 	sign.Size = Vector3.new(5, 3.5, 0.4)
@@ -80,18 +86,17 @@ for i, map in ipairs(mapData) do
 	sign.Color = Color3.fromRGB(20, 25, 35)
 	sign.Parent = padModel
 
-	local stroke = Instance.new("SelectionBox")
-	stroke.Adornee = sign
-	stroke.Color3 = map.color
-	stroke.LineThickness = 0.08
-	stroke.Transparency = 0
-	stroke.SurfaceTransparency = 1
-	stroke.Parent = sign
+	local outline = Instance.new("SelectionBox")
+	outline.Adornee = sign
+	outline.Color3 = map.color
+	outline.LineThickness = 0.08
+	outline.SurfaceTransparency = 1
+	outline.Parent = sign
 
 	local signGui = Instance.new("SurfaceGui")
 	signGui.Face = Enum.NormalId.Back
-	signGui.Parent = sign
 	signGui.LightInfluence = 0
+	signGui.Parent = sign
 
 	local nameLabel = Instance.new("TextLabel")
 	nameLabel.Size = UDim2.new(1, 0, 0.4, 0)
@@ -114,6 +119,9 @@ for i, map in ipairs(mapData) do
 	voteLabel.TextColor3 = map.color
 	voteLabel.Parent = signGui
 
+	voteLabels[map.name] = voteLabel
+
+	-- Voting logic
 	local debounce = {}
 	base.Touched:Connect(function(hit)
 		local character = hit.Parent
@@ -125,8 +133,8 @@ for i, map in ipairs(mapData) do
 		local prevVote = playerVotes[player.UserId]
 		if prevVote and prevVote ~= map.name then
 			votes[prevVote] = math.max(0, votes[prevVote] - 1)
-			if pads[prevVote] then
-				pads[prevVote].VoteCountLabel.Text = "VOTES: " .. votes[prevVote]
+			if voteLabels[prevVote] then
+				voteLabels[prevVote].Text = "VOTES: " .. votes[prevVote]
 			end
 		end
 
@@ -140,8 +148,7 @@ for i, map in ipairs(mapData) do
 		debounce[player.UserId] = nil
 	end)
 
-	pads[map.name] = {VoteCountLabel = voteLabel}
-
+	-- Idle glow pulse
 	task.spawn(function()
 		while true do
 			for t = 0, 1, 0.05 do
@@ -152,15 +159,19 @@ for i, map in ipairs(mapData) do
 	end)
 end
 
+for i, map in ipairs(mapData) do
+	buildPad(map, basePositions[i])
+end
+
 game.Players.PlayerRemoving:Connect(function(player)
 	local prevVote = playerVotes[player.UserId]
 	if prevVote then
 		votes[prevVote] = math.max(0, votes[prevVote] - 1)
-		if pads[prevVote] then
-			pads[prevVote].VoteCountLabel.Text = "VOTES: " .. votes[prevVote]
+		if voteLabels[prevVote] then
+			voteLabels[prevVote].Text = "VOTES: " .. votes[prevVote]
 		end
 		playerVotes[player.UserId] = nil
 	end
 end)
 
-print("[gh-sync] Real-part voting signs created (old UI version replaced)")
+print("[gh-sync] Voting pads fully rebuilt: " .. #mapData .. " pads active")
