@@ -4,5 +4,5 @@
   { "path": "ServerScriptService", "file": "LobbyLighting.lua", "type": "Script", "sha": "ee616a96f4442cc15f8b6e7804637e2071676222" },
   { "path": "ServerScriptService", "file": "LobbyDetails.lua", "type": "Script", "sha": "0c6990b5dc258facee77988fed1956d710cde21a" },
   { "path": "ServerScriptService", "file": "MapVotingPads.lua", "type": "Script", "sha": "0fa7b1f208a2ce7a9015f6739d81aa49fba33bab" },
-  { "path": "ServerScriptService", "file": "EcoLabMap_v2.lua", "type": "Script", "sha": "6f0cac00201222545948a8b0dc7e22149970db16" }
+  { "path": "ServerScriptService", "file": "EcoLabMap_v3.lua", "type": "Script", "sha": "856fba813491408414b423e6ce02bcadca627e0f" }
 ]
